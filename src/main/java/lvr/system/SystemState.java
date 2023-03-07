@@ -3,14 +3,30 @@ package lvr.system;
 import lombok.Data;
 import lvr.exceptions.system.SystemStateValueNotExpected;
 import lvr.exceptions.system.SystemVariableValueNotExpected;
+import lvr.exceptions.test.SystemStateImplementationException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public abstract class SystemState {
 
     private String name;
-    private List<SystemVariable> determiningVariables;
+    private List<SystemVariable> determiningVariables = new ArrayList<>();
+
+    protected SystemState(String name) {
+        this.name = name;
+    }
+
+    private boolean hasVariables() {
+        return determiningVariables.size() > 0;
+    }
+
+    private void exitIfNoVariables() throws SystemStateImplementationException {
+        if(!hasVariables()) {
+            throw new SystemStateImplementationException("system state has no variables defined");
+        }
+    }
 
     public boolean isCompatibleWith(SystemState otherState) {
         for(SystemVariable thisVariable : determiningVariables) {
@@ -37,4 +53,11 @@ public abstract class SystemState {
             }
         }
     }
+
+    protected abstract void addDeterminingVariables();
+
+    public static SystemState getWithName(String stateName) {
+
+    }
+
 }

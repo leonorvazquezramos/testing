@@ -4,6 +4,7 @@ import lvr.exceptions.system.SystemActionPostconditionFailed;
 import lvr.exceptions.system.SystemActionPreconditionFailed;
 import lvr.exceptions.system.SystemStateValueNotExpected;
 import lvr.exceptions.test.TestFailedOnActions;
+import lvr.exceptions.test.TestImplementationException;
 import lvr.system.SystemAction;
 import lvr.system.SystemCapability;
 import lvr.system.SystemState;
@@ -26,6 +27,8 @@ public abstract class Test {
                 step.execute();
             } catch (SystemActionPreconditionFailed | SystemActionPostconditionFailed e) {
                 throw new TestFailedOnActions(e);
+            } catch (TestImplementationException e) {
+                throw new RuntimeException(e);
             }
         }
         try {

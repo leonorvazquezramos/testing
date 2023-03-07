@@ -4,14 +4,20 @@ import lvr.config.InterfaceType;
 import lvr.exceptions.system.SystemActionPostconditionFailed;
 import lvr.exceptions.system.SystemActionPreconditionFailed;
 import lvr.exceptions.system.SystemStateValueNotExpected;
+import lvr.exceptions.test.SystemActionImplementationException;
+import lvr.exceptions.test.TestImplementationException;
 
 public abstract class SystemAction {
-    private String name;
-    private SystemState precondition;
-    private SystemState postcondition;
-    private InterfaceType type;
+    protected String name;
+    protected SystemState precondition;
+    protected SystemState postcondition;
+    protected InterfaceType type;
 
-    public void execute() throws SystemActionPreconditionFailed, SystemActionPostconditionFailed {
+    protected SystemAction(String name) {
+        this.name = name;
+    }
+
+    public void execute() throws SystemActionPreconditionFailed, SystemActionPostconditionFailed, SystemActionImplementationException {
         setup();
         actionImplementation();
         finish();
@@ -19,15 +25,23 @@ public abstract class SystemAction {
 
     private void setup() throws SystemActionPreconditionFailed {
         try {
-            precondition.verify();
+            if(precondition != null) {
+                precondition.verify();
+            }
         } catch (SystemStateValueNotExpected e) {
             throw new SystemActionPreconditionFailed(e);
         }
     }
 
     protected abstract void actionImplementation();
+    protected abstract void setPrecondition(String stateName);
+    protected abstract void setPostcondition(String stateName);
 
-    private void finish() throws SystemActionPostconditionFailed {
+
+    private void finish() throws SystemActionPostconditionFailed, SystemActionImplementationException {
+        if(postcondition == null) {
+            throw new SystemActionImplementationException("this action has no defined postconditions");
+        }
         try {
             postcondition.verify();
         } catch (SystemStateValueNotExpected e) {

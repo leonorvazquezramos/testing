@@ -7,18 +7,14 @@ import java.lang.reflect.Type;
 
 @Data
 public abstract class SystemVariable {
-    private String name;
-    private String value;
-    private Type type;
+    protected String name;
+    protected String value;
 
-    SystemVariable(String name, Type type) {
+    protected SystemVariable(String name, String value) {
         this.name = name;
-        this.type = type;
-    }
-
-    public void set(String value) {
         this.value = value;
     }
+
 
     public boolean equals(SystemVariable otherVariable) {
         return this.name.equals(otherVariable.name) &&
